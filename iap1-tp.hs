@@ -75,7 +75,8 @@ nombresDeUsuarios :: RedSocial -> [String]
 nombresDeUsuarios redSocial = 
     proyectarNombres(usuarios(redSocial))
 
--- caso de testeo
+{-- caso de testeo
+
 us1 = (1, "Juan")
 us2 = (2, "Paulina")
 us3 = (3, "Juan")
@@ -87,6 +88,9 @@ red1 =
 -- pasar a archivo de test
 nombresDeUsuariosTest :: [String]
 nombresDeUsuariosTest = nombresDeUsuariosTest red1
+--}
+
+
 
 -- Ejercicio 2
 
@@ -105,7 +109,8 @@ amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name)
 amigosDe :: RedSocial -> Usuario -> [Usuario]
 amigosDe redSocial us = amigosDesdeRelDe (relaciones(redSocial)) us
 
--- caso de testeo
+{-- caso de testeo
+
 us4 = (4, "Maria")
 rel3_4 = (us3, us4)
 rel4_1 = (us4, us1)
@@ -118,6 +123,9 @@ red2 =
 -- pasar a archivo de test
 amigosDeTest :: [Usuario] 
 amigosDeTest = amigosDe red2 us1
+--}
+
+
 
 -- Ejercicio 3
 
@@ -125,39 +133,112 @@ amigosDeTest = amigosDe red2 us1
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos redSocial us = length (amigosDe redSocial us)
 
--- caso de testeo
+{-- caso de testeo
 red3 = red2
-
 -- pasar a archivo de test
+
 cantidadDeAmigosTest :: Int
 cantidadDeAmigosDeTest = cantidadDeAmigos red3 us1
+--}
+
+
 
 -- Ejercicio 4
 
--- describir qué hace la función: .....
+-- FUNCION AUXILIAR
+--compararUsuarios recibe la red social (solo para tener la cantidad de amigos de cada usuario), la lista de todos los
+-- usuarios y el primero de esta lista, a partir de ahi compara la cantidad de amigos de todos los usuarios de la lista
+--uno a uno empezando con el primero, si un usuario tiene mas amigos que el primero se vuelve a llamar a la funcion
+--con este usuario nuevo y con la cola de la lista
+compararUsuarios :: RedSocial -> [Usuario] -> Usuario -> Usuario
+compararUsuarios red [] x = x
+compararUsuarios red us x | cantidadDeAmigos red x >= cantidadDeAmigos red (head (us)) = compararUsuarios red (tail (us)) x 
+                          | otherwise = compararUsuarios red (tail us) (head us)
+
+-- Llama a la funcion compararUsuarios pasandole como parametros la red social la lista de todos los usuarios de la res
+--y el primer usuario de esta lista
 usuarioConMasAmigos :: RedSocial -> Usuario
-usuarioConMasAmigos = undefined
+usuarioConMasAmigos red = compararUsuarios red (usuarios red) (head (usuarios red))
 
--- describir qué hace la función: .....
+
+
+-- Ejercicio 5
+-- Se fija si el usuario con mas amigos de la red tiene mas de un millon de amigos, si los tiene es verdadero
+-- si no, sabemos que no hay otro que cumpla esto
 estaRobertoCarlos :: RedSocial -> Bool
-estaRobertoCarlos = undefined
+estaRobertoCarlos red | cantidadDeAmigos red (usuarioConMasAmigos(red)) > 1000000 = True
+                      | otherwise = False
 
--- describir qué hace la función: .....
+
+
+--Ejercicio 6
+
+-- FUNCION AUXILIAR
+-- Devuelve True si el usuario de la publicacion es el mismo que del que queremos su lista de publicaciones
+--si no lo es devuelve False
+esPublicacionDe :: Usuario -> Publicacion -> Bool
+esPublicacionDe us p | usuarioDePublicacion p == us = True
+                     | otherwise = False
+
+--FUNCION AUXILIAR
+-- A esta funcion se le pasan las publicaciones de la red y el usuario del que queremos 
+-- sus publicaciones y toma cada publicacion de la lista y la pasa a esPublicacionDe para chequear
+-- si la publicacion es del Usuario, si lo es la agrega a la lista y se chequea la siguiente invocando la cola de la lista,
+-- sino se toma la cola de la lista para chequear el siguiente asi hasta que la lista este vacia
+filtrarPublicaciones :: [Publicacion] -> Usuario -> [Publicacion]
+filtrarPublicaciones [] us = []
+filtrarPublicaciones ps us | esPublicacionDe us (head (ps)) = (head (ps)) : filtrarPublicaciones (tail ps) us
+                           | otherwise = filtrarPublicaciones (tail ps) us
+
+-- Llama a la funcion filtrarPublicaciones pasandole como parametros las publicaciones de la red y el usuario del que 
+-- queremos  sus publicaciones
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
-publicacionesDe = undefined
+publicacionesDe red us = filtrarPublicaciones (publicaciones (red)) us
 
--- describir qué hace la función: .....
+
+
+-- Ejercicio 7
+
+--FUNCION AUXILIAR
+-- Si el usuario pertenece a la lista del tercer elemento de la tripla publicacion significa que le dio me gusta
+-- por eso solo se cheque si el usuario pertenece a esta lista
+leDioLike :: Publicacion -> Usuario -> Bool
+leDioLike (a, b, l) us | pertenece us l = True
+                       | otherwise = False
+
+-- FUNCION AUXILIAR
+-- Recibiendo el usuario como parametro y la lista de publicacione, pasamos las publicaciones de a una y vemos si nuestro
+-- usuario le dio me gusta (es decir si aparece en la lista de usuarios perteneciente a la publicacion), si le gusta la
+-- publicacion esta se agrega a la lista y se pasa con la siguiente hasta que quede vacia
+filtrarPorLikes :: [Publicacion] -> Usuario -> [Publicacion]
+filtrarPorLikes [] us = []
+filtrarPorLikes ps us | leDioLike (head ps) us = head ps : filtrarPorLikes (tail ps) us
+                      | otherwise = filtrarPorLikes (tail ps) us 
+
+-- Igual que en el ejercicio anterior se pasan los parametros a una funcion filtrarPorLikes, que en este caso como dice el
+-- nombre se seleccionan segun si le dio me gusta el usuario dado
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA = undefined
+publicacionesQueLeGustanA red us = filtrarPorLikes (publicaciones (red)) us
 
--- describir qué hace la función: .....
+
+
+--Ejercicio 8
+
+-- La funcion se fija si las publicaciones que le gustan al usuario 1 son las mismas que le gustan al usuario 2
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
-lesGustanLasMismasPublicaciones = undefined
+lesGustanLasMismasPublicaciones red us1 us2 | publicacionesQueLeGustanA red us1 == publicacionesQueLeGustanA red us2 = True
+                                            | otherwise = False
+
+
+--Ejercicio 9
 
 -- describir qué hace la función: .....
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel = undefined
 
+
+
+--Ejercicio 10
 -- describir qué hace la función: .....
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
 existeSecuenciaDeAmigos = undefined
