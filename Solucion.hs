@@ -90,8 +90,6 @@ nombresDeUsuariosTest :: [String]
 nombresDeUsuariosTest = nombresDeUsuariosTest red1
 --}
 
-
-
 -- Ejercicio 2
 
 -- funcion auxiliar
