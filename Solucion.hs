@@ -49,14 +49,14 @@ pertenece e (l:ls)
     | otherwise = pertenece e ls
 
 -- funcion auxiliar
--- aplana la lista de usuarios en una lista de strings
--- sin repetidos
+-- de una lista de usuarios genera una lista de strings
+-- con repetidos
 proyectarTodosNombres :: [Usuario] -> [String]
 proyectarTodosNombres [] = []
 proyectarTodosNombres (x:xs) = [nombreDeUsuario(x)] ++ proyectarTodosNombres xs
 
 -- funcion auxiliar 
--- quita los repetidos de una lista de strings
+-- quita los repetidos de una lista
 quitarRepetidos :: (Eq t) => [t] -> [t]
 quitarRepetidos [] = []
 quitarRepetidos (x:xs) 
