@@ -241,10 +241,16 @@ cuentalikes red us t
 likesPersonales :: RedSocial -> Usuario -> Usuario -> Int
 likesPersonales red us1 us2 == cuentalikes red us2 (publicacionesDe red us1)
 
+--auxiliar:  si el numero de likes personales de un us2 es igual al numero de publicaciones de un us1 devuelve True
+esseguidorfiel :: RedSocial -> Usuario -> Usuario -> Int
+    |likesPersonales red us1 us2 == length(publicacionesDe red us1) = True
+    |likesPersonales red us1 us2 < length(publicacionesDe red us1) = False
+
 -- True si hay uno o mas usuarios que hayan dado like a todas las publicaciones del usuario
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel = red us
-    |length(publicacionesDe red us) == length(likesPersonales red us head(likesDePublicacion head(publicacionesDe red us))
+    |
+    |
 
 
 
