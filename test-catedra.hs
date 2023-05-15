@@ -4,7 +4,15 @@ import Solucion
 main = runTestTT tests
 
 tests = test [
-    " nombresDeUsuarios 1" ~: (nombresDeUsuarios redA) ~?= ["Juan","Natalia","Pedro","Mariela"],
+    -- Tests nombresDeUsuarios
+
+    " Caso 1: Red sin usuarios" ~: (nombresDeUsuarios ([], [], [])) ~?= [],
+
+    " Caso 2: Red con usuarios no repetidos" ~: (nombresDeUsuarios redA) ~?= ["Juan","Natalia","Pedro","Mariela"],
+
+    " Caso 3: Red con usuarios repetidos" ~: (nombresDeUsuarios redB) ~?= ["Juan", "Pedro", "Natalia"],
+
+    -- Tests amigosDe
 
     " amigosDe 1" ~: (amigosDe redA usuario1) ~?= [usuario2, usuario4],
 
