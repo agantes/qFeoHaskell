@@ -214,10 +214,40 @@ lesGustanLasMismasPublicaciones red us1 us2 | publicacionesQueLeGustanA red us1 
 
 
 --Ejercicio 9
+--auxiliar: cuenta el numero de likes que un usuario dió dentro de una lista de publicaciones
+cuentalikes :: RedSocial -> Usuario -> [Publicacion] -> Int
+cuentalikes red us t
+    | length t == 1 && (leDioLike (head t) us) == True = 1
+    | length t == 1 && (leDioLike (head t) us) == False = 0
+    | leDioLike (head t) us == True = 1 + cuentalikes red us (tail t)
+    | leDioLike (head t) us == False = 0 + cuentalikes red us (tail t)
+    
+--auxiliar: cuenta el numero de likes que un usuario2 le dio a la lista de publicaciones de otro usuario1
+likesPersonales :: RedSocial -> Usuario -> Usuario -> Int
+likesPersonales red us1 us2 = cuentalikes red us2 (publicacionesDe red us1)
 
--- describir qué hace la función: .....
+--auxiliar:  si el numero de likes personales de un us2 es igual al numero de publicaciones de un us1 devuelve True 
+--revisa si us2 es seguidor fiel de us1
+esseguidorfiel :: RedSocial -> Usuario -> Usuario -> Bool
+esseguidorfiel red us1 us2
+    |likesPersonales red us1 us2 == length(publicacionesDe red us1) = True
+    |likesPersonales red us1 us2 < length(publicacionesDe red us1) = False
+    
+ --aux: si hay un seguidor fiel de un usuario dentro de una lista
+hayseguidorfiel :: RedSocial -> Usuario -> [Usuario] -> Bool 
+hayseguidorfiel red us t
+    |length t == 0 = False
+    |length t == 1 && esseguidorfiel red us (head t) == True = True
+    |length t == 1 && esseguidorfiel red us (head t) == False = False
+    |esseguidorfiel red us (head t) == False = hayseguidorfiel red us (tail t)
+    |esseguidorfiel red us (head t) == True = True
+    
+ 
+
+-- True si hay uno o mas usuarios que hayan dado like a todas las publicaciones del usuario
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
-tieneUnSeguidorFiel = undefined
+tieneUnSeguidorFiel red us = hayseguidorfiel red us (likesDePublicacion (head(publicacionesDe red us)))
+    
 
 
 
