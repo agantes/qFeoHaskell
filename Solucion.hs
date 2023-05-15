@@ -251,6 +251,7 @@ esseguidorfiel red us1 us2
  --aux: si hay un seguidor fiel de un usuario dentro de una lista
 hayseguidorfiel :: RedSocial -> Usuario -> [Usuario] -> Bool 
 hayseguidorfiel red us t
+    |length t == 0 = False
     |length t == 1 && esseguidorfiel red us (head t) == True = True
     |length t == 1 && esseguidorfiel red us (head t) == False = False
     |esseguidorfiel red us (head t) == False = hayseguidorfiel red us (tail t)
