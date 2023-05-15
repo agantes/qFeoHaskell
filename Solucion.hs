@@ -41,7 +41,7 @@ likesDePublicacion (_, _, us) = us
 
 -- Ejercicio 1
 
--- verifica un elemento pertenece a una secuencia
+-- verifica que un elemento pertenece a una secuencia
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (l:ls) 
@@ -74,21 +74,6 @@ proyectarNombres us =
 nombresDeUsuarios :: RedSocial -> [String]
 nombresDeUsuarios redSocial = 
     proyectarNombres(usuarios(redSocial))
-
-{-- caso de testeo
-
-us1 = (1, "Juan")
-us2 = (2, "Paulina")
-us3 = (3, "Juan")
-red1 = 
-    ([us1, us2, us3], 
-     [],
-     [])
-
--- pasar a archivo de test
-nombresDeUsuariosTest :: [String]
-nombresDeUsuariosTest = nombresDeUsuariosTest red1
---}
 
 -- Ejercicio 2
 
