@@ -41,45 +41,41 @@ likesDePublicacion (_, _, us) = us
 
 -- Ejercicio 1
 
--- verifica que un elemento pertenece a una secuencia
+-- FUNCION AUXILIAR
+-- Verifica que un elemento pertenece a una secuencia
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (l:ls) 
     | e == l = True
     | otherwise = pertenece e ls
 
--- funcion auxiliar
--- de una lista de usuarios genera una lista de strings
--- con repetidos
+-- FUNCION AUXILIAR
+-- De una lista de usuarios genera una lista de strings
+-- con repetidos incluidos
 proyectarTodosNombres :: [Usuario] -> [String]
 proyectarTodosNombres [] = []
 proyectarTodosNombres (x:xs) = [nombreDeUsuario(x)] ++ proyectarTodosNombres xs
 
--- funcion auxiliar 
--- quita los repetidos de una lista
+-- FUNCION AUXILIAR 
+-- Quita los repetidos de una lista de manera que queda una sola instancia
+-- (la última)
 quitarRepetidos :: (Eq t) => [t] -> [t]
 quitarRepetidos [] = []
 quitarRepetidos (x:xs) 
     | pertenece x xs = quitarRepetidos xs
     | otherwise = x : quitarRepetidos xs 
 
--- genera una lista de strings a partir de una 
--- lista de usuarios
-proyectarNombres :: [Usuario] -> [String]
-proyectarNombres us = 
-    quitarRepetidos (proyectarTodosNombres us)
-
--- devuelve como resultado todos los nombres de los usuarios de la red
+-- Devuelve como resultado todos los nombres de los usuarios de la red
 -- en forma de lista de strings
 nombresDeUsuarios :: RedSocial -> [String]
-nombresDeUsuarios redSocial = 
-    proyectarNombres(usuarios(redSocial))
+nombresDeUsuarios redSocial =
+    quitarRepetidos (proyectarTodosNombres (usuarios(redSocial)))
 
 -- Ejercicio 2
 
--- funcion auxiliar
--- a partir de una lista de relaciones da una lista de usuarios que tienen 
--- una relacion con el usuario que se da como parametro
+-- FUNCION AUXILIAR
+-- A partir de una lista de relaciones da una lista de usuarios que tienen 
+-- una relacion con el usuario que se da como parametros
 amigosDesdeRelDe :: [Relacion] -> Usuario -> [Usuario]
 amigosDesdeRelDe [] _ = []
 amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name) 
@@ -87,44 +83,16 @@ amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name)
     | id2 == id = (id1, name1) : amigosDesdeRelDe rels (id, name)
     | otherwise = amigosDesdeRelDe rels (id, name)
 
--- devuelve todos los amigos de un usuario como lista de usuarios
+-- Devuelve todos los amigos de un usuario como lista de usuarios
 -- a partir de una red social y un usuario
 amigosDe :: RedSocial -> Usuario -> [Usuario]
 amigosDe redSocial us = amigosDesdeRelDe (relaciones(redSocial)) us
 
-{-- caso de testeo
-
-us4 = (4, "Maria")
-rel3_4 = (us3, us4)
-rel4_1 = (us4, us1)
-rel2_1 = (us2, us1)
-red2 = 
-    ([us1, us2, us3, us4],
-     [rel3_4, rel4_1, rel2_1],
-     [])
-
--- pasar a archivo de test
-amigosDeTest :: [Usuario] 
-amigosDeTest = amigosDe red2 us1
---}
-
-
-
 -- Ejercicio 3
 
--- devuelve el numero de amigos que tiene un usuario en la red social
+-- Devuelve el numero de amigos que tiene un usuario en la red social
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos redSocial us = length (amigosDe redSocial us)
-
-{-- caso de testeo
-red3 = red2
--- pasar a archivo de test
-
-cantidadDeAmigosTest :: Int
-cantidadDeAmigosDeTest = cantidadDeAmigos red3 us1
---}
-
-
 
 -- Ejercicio 4
 

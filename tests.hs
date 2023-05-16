@@ -37,13 +37,16 @@ red9 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [], [((1,"A"),"PrimeraPubli",
                                                         ]
         )    --el usuario (3,"C") es seguidor fiel de (1,"A")
 
+red10 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"A")], [], [])
+
 -------------------------------------------------------------------------------------------------------   
 
 -- Tests ejercicio 1 --
 testNombresDeUsuarios = TestList [
     " Lista de nombres vacia " ~: (nombresDeUsuarios red2) ~?= [],
     " Lista con un elemento " ~: (nombresDeUsuarios red3) ~?= ["A"],
-    " Lista con varios nombres " ~: (nombresDeUsuarios red1) ~?= ["A","B","C","D","E"]
+    " Lista con varios nombres " ~: (nombresDeUsuarios red1) ~?= ["A","B","C","D","E"],
+    " Lista con varios nombres con repetidos " ~: (nombresDeUsuarios red10) ~?= ["B","C","D","E","A"]
     ]
 
 -- Tests ejercicio 2 --
