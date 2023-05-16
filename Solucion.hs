@@ -139,7 +139,7 @@ compararUsuarios red us x | cantidadDeAmigos red x >= cantidadDeAmigos red (head
                           | otherwise = compararUsuarios red (tail us) (head us)
 
 -- Llama a la funcion compararUsuarios pasandole como parametros la red social la lista de todos los usuarios de la res
---y el primer usuario de esta lista
+--y el primer usuario de esta lista, REQUIERE QUE |usuarios| > 0
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = compararUsuarios red (usuarios red) (head (usuarios red))
 
@@ -190,7 +190,7 @@ leDioLike (a, b, l) us | pertenece us l = True
                        | otherwise = False
 
 -- FUNCION AUXILIAR
--- Recibiendo el usuario como parametro y la lista de publicacione, pasamos las publicaciones de a una y vemos si nuestro
+-- Recibiendo el usuario como parametro y la lista de publicaciones, pasamos las publicaciones de a una y vemos si nuestro
 -- usuario le dio me gusta (es decir si aparece en la lista de usuarios perteneciente a la publicacion), si le gusta la
 -- publicacion esta se agrega a la lista y se pasa con la siguiente hasta que quede vacia
 filtrarPorLikes :: [Publicacion] -> Usuario -> [Publicacion]
@@ -246,6 +246,7 @@ hayseguidorfiel red us t
 
 -- True si hay uno o mas usuarios que hayan dado like a todas las publicaciones del usuario
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
+tieneUnSeguidorFiel (_,_,[]) us = False
 tieneUnSeguidorFiel red us = hayseguidorfiel red us (likesDePublicacion (head(publicacionesDe red us)))
     
 
