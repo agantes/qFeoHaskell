@@ -114,13 +114,19 @@ usuarioConMasAmigos red = compararUsuarios red (usuarios red) (head (usuarios re
 
 
 -- Ejercicio 5
+
+-- FUNCION AUXILIAR
+-- A partir de un numero n, verifica si en la red el usuario con mas amigos
+-- cuenta con n+1 amigos 
+usuarioConNYUnAmigos :: RedSocial -> Int -> Bool
+usuarioConNYUnAmigos red n
+    | cantidadDeAmigos red (usuarioConMasAmigos(red)) > n = True
+    | otherwise = False
+
 -- Se fija si el usuario con mas amigos de la red tiene mas de un millon de amigos, si los tiene es verdadero
 -- si no, sabemos que no hay otro que cumpla esto
 estaRobertoCarlos :: RedSocial -> Bool
-estaRobertoCarlos red | cantidadDeAmigos red (usuarioConMasAmigos(red)) > 1000000 = True
-                      | otherwise = False
-
-
+estaRobertoCarlos red = usuarioConNYUnAmigos red 1000000
 
 --Ejercicio 6
 

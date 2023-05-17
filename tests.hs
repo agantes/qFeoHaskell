@@ -40,18 +40,18 @@ red9 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [], [((1,"A"),"PrimeraPubli",
 red10 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"A")], [], [])
 
 -- El test ideal deberia tener un millon como numDePrueba
-numDePrueba = 100
+numDePrueba = 10
 
-usuariosHayUnRobertoCarlos = nUsuarios (numDePrueba+1) ++ [(1000002, "Roberto")]
-relacionesHayUnRobertoCarlos = relacionesConPrimero usuariosHayUnRobertoCarlos
+usuariosHayUnRobertoCarlos = nUsuarios (numDePrueba+1) ++ [(12, "Roberto")]
+relacionesHayUnRobertoCarlos = relacionesCon usuariosHayUnRobertoCarlos (12, "Roberto")
 hayUnRobertoCarlos = (
     usuariosHayUnRobertoCarlos,
     relacionesHayUnRobertoCarlos,
     []
     )
 
-usuariosNoHayUnRobertoCarlos = nUsuarios numDePrueba ++ [(1000001, "Roberto")]
-relacionesNoHayUnRobertoCarlos = relacionesConPrimero usuariosNoHayUnRobertoCarlos
+usuariosNoHayUnRobertoCarlos = nUsuarios numDePrueba ++ [(11, "Roberto")]
+relacionesNoHayUnRobertoCarlos = relacionesCon usuariosNoHayUnRobertoCarlos (11, "Roberto")
 noHayUnRobertoCarlos = (
     usuariosNoHayUnRobertoCarlos,
     relacionesNoHayUnRobertoCarlos,
@@ -61,23 +61,15 @@ noHayUnRobertoCarlos = (
 -------------------------------------------------------------------------------------------------------   
 -- Funciones auxiliares de testeo
 
--- Para estas funciones el concepto de primer elemento va a ser la posicion
--- i-esima que difiera en una unidad con la longitud de la lista
--- Devuelve el valor de la cola de una lista
-principioDeLista :: [t] -> t
-principioDeLista [x] = x
-principioDeLista (x:xs) = principioDeLista xs
-
 -- Genera una lista de n usuarios con diferente id pero mismo nombre
 nUsuarios :: Integer -> [Usuario]
 nUsuarios 0 = []
 nUsuarios n = [(n,"A")] ++ nUsuarios (n-1)
 
--- Genera relaciones entre el primer usuario y el resto de la red
-relacionesConPrimero :: [Usuario] -> [Relacion]
-relacionesConPrimero [u] = []
-relacionesConPrimero (u:us) = [(primero,u)] ++ relacionesConPrimero us 
-    where primero = principioDeLista us 
+-- Genera relaciones entre toda la red y un usuario dado
+relacionesCon :: [Usuario] -> Usuario -> [Relacion]
+relacionesCon [u] _ = []
+relacionesCon (u:us) v = [(v,u)] ++ relacionesCon us v
 
 -------------------------------------------------------------------------------------------------------   
 -- Tests ejercicio 1 --
@@ -111,8 +103,8 @@ testUsuarioConMasAmigos = TestList [
 
 -- Tests ejercicio 5 --
 testEstaRobertoCarlos = TestList [
-    "Esta Roberto Carlos" ~: (estaRobertoCarlos hayUnRobertoCarlos) ~?= True,
-    "No esta Roberto Carlos" ~: (estaRobertoCarlos noHayUnRobertoCarlos) ~?= False
+    "Esta Roberto Carlos" ~: (usuarioConNYUnAmigos hayUnRobertoCarlos 100) ~?= True,
+    "No esta Roberto Carlos" ~: (usuarioConNYUnAmigos noHayUnRobertoCarlos 100) ~?= False
     ]
 
 -- Tests ejercicio 6 -- 
