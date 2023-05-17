@@ -39,8 +39,47 @@ red9 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [], [((1,"A"),"PrimeraPubli",
 
 red10 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"A")], [], [])
 
--------------------------------------------------------------------------------------------------------   
+-- El test ideal deberia tener un millon como numDePrueba
+numDePrueba = 100
 
+usuariosHayUnRobertoCarlos = nUsuarios (numDePrueba+1) ++ [(1000002, "Roberto")]
+relacionesHayUnRobertoCarlos = relacionesConPrimero usuariosHayUnRobertoCarlos
+hayUnRobertoCarlos = (
+    usuariosHayUnRobertoCarlos,
+    relacionesHayUnRobertoCarlos,
+    []
+    )
+
+usuariosNoHayUnRobertoCarlos = nUsuarios numDePrueba ++ [(1000001, "Roberto")]
+relacionesNoHayUnRobertoCarlos = relacionesConPrimero usuariosNoHayUnRobertoCarlos
+noHayUnRobertoCarlos = (
+    usuariosNoHayUnRobertoCarlos,
+    relacionesNoHayUnRobertoCarlos,
+    []
+    )
+
+-------------------------------------------------------------------------------------------------------   
+-- Funciones auxiliares de testeo
+
+-- Para estas funciones el concepto de primer elemento va a ser la posicion
+-- i-esima que difiera en una unidad con la longitud de la lista
+-- Devuelve el valor de la cola de una lista
+principioDeLista :: [t] -> t
+principioDeLista [x] = x
+principioDeLista (x:xs) = principioDeLista xs
+
+-- Genera una lista de n usuarios con diferente id pero mismo nombre
+nUsuarios :: Integer -> [Usuario]
+nUsuarios 0 = []
+nUsuarios n = [(n,"A")] ++ nUsuarios (n-1)
+
+-- Genera relaciones entre el primer usuario y el resto de la red
+relacionesConPrimero :: [Usuario] -> [Relacion]
+relacionesConPrimero [u] = []
+relacionesConPrimero (u:us) = [(primero,u)] ++ relacionesConPrimero us 
+    where primero = principioDeLista us 
+
+-------------------------------------------------------------------------------------------------------   
 -- Tests ejercicio 1 --
 testNombresDeUsuarios = TestList [
     " Lista de nombres vacia " ~: (nombresDeUsuarios red2) ~?= [],
@@ -68,6 +107,12 @@ testUsuarioConMasAmigos = TestList [
     " Hay un usuario con mas amigos " ~: (usuarioConMasAmigos red4) ~?= (3,"C"),
     " Ninguno tiene amigos " ~: (usuarioConMasAmigos red1) ~?= (1,"A"),
     " Tienen + de 1 amigo, pero misma cantidad " ~: (usuarioConMasAmigos red5) ~?= (2,"B")
+    ]
+
+-- Tests ejercicio 5 --
+testEstaRobertoCarlos = TestList [
+    "Esta Roberto Carlos" ~: (estaRobertoCarlos hayUnRobertoCarlos) ~?= True,
+    "No esta Roberto Carlos" ~: (estaRobertoCarlos noHayUnRobertoCarlos) ~?= False
     ]
 
 -- Tests ejercicio 6 -- 
@@ -102,7 +147,7 @@ testTieneUnSeguidorFiel = TestList [
 
 testSuite = TestList [
     testNombresDeUsuarios,testAmigosDe,testCantidadDeAmigos,
-    testUsuarioConMasAmigos,testPublicacionesDe,
+    testUsuarioConMasAmigos, testEstaRobertoCarlos, testPublicacionesDe,
     testPublicacionesQueLeGustanA,testLesGustanLasMismasPublicaciones,
     testTieneUnSeguidorFiel
     ]
