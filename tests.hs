@@ -103,8 +103,8 @@ testUsuarioConMasAmigos = TestList [
 
 -- Tests ejercicio 5 --
 testEstaRobertoCarlos = TestList [
-    "Esta Roberto Carlos" ~: (usuarioConNYUnAmigos hayUnRobertoCarlos 100) ~?= True,
-    "No esta Roberto Carlos" ~: (usuarioConNYUnAmigos noHayUnRobertoCarlos 100) ~?= False
+    "Esta Roberto Carlos" ~: (usuarioConNYUnAmigos hayUnRobertoCarlos 10) ~?= True,
+    "No esta Roberto Carlos" ~: (usuarioConNYUnAmigos noHayUnRobertoCarlos 10) ~?= False
     ]
 
 -- Tests ejercicio 6 -- 
