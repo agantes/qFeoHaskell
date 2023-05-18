@@ -39,6 +39,12 @@ red9 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [], [((1,"A"),"PrimeraPubli",
 
 red10 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"A")], [], [])
 
+red11 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [((1,"A"),(4,"D")),((1,"A"),(5,"E")),((4,"D"),(3,"C")),((2,"B"),(3,"C"))], []))
+
+red12 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"F")], [((1,"A"),(4,"D")),((1,"A"),(5,"E")),((4,"D"),(3,"C")),((2,"B"),(6,"F"))], []))
+
+red13 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D")], [((1,"A"), (2,"B")), ((2,"B"), (3,"C")), ((3,"C"), (1,"A"))], []))
+
 -- El test ideal deberia tener un millon como numDePrueba
 numDePrueba = 10
 
@@ -137,11 +143,19 @@ testTieneUnSeguidorFiel = TestList [
     " No tiene publicaciones " ~: (tieneUnSeguidorFiel red1 (1,"A")) ~?= False
     ]
 
+-- Test ejercicio 10 -- 
+testExisteSecuenciaDeAmigos = TestList [
+    " Amigos directos " ~: (existeSecuenciaDeAmigos red4 (2,"B") (3,"C")) ~?= True,
+    " Existe secuencia " ~: (existeSecuenciaDeAmigos red11 (2,"B") (1,"A")) ~?= True,
+    " Existe secuencia II " ~: (existeSecuenciaDeAmigos red13 (3,"C") (4,"D")) ~?= False,
+    " No existe secuencia " ~: (existeSecuenciaDeAmigos red12 (2,"B") (1,"A")) ~?= False
+    ]    
+
 testSuite = TestList [
-    testNombresDeUsuarios,testAmigosDe,testCantidadDeAmigos,
+    testNombresDeUsuarios, testAmigosDe,testCantidadDeAmigos,
     testUsuarioConMasAmigos, testEstaRobertoCarlos, testPublicacionesDe,
-    testPublicacionesQueLeGustanA,testLesGustanLasMismasPublicaciones,
-    testTieneUnSeguidorFiel
+    testPublicacionesQueLeGustanA, testLesGustanLasMismasPublicaciones,
+    testTieneUnSeguidorFiel, testExisteSecuenciaDeAmigos
     ]
 
 run = runTestTT testSuite

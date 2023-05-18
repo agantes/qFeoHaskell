@@ -1,6 +1,7 @@
 -- antigui nombre iap1-tp
 module Solucion where
 
+
 -- Completar con los datos del grupo
 --
 -- Nombre de Grupo: xx
@@ -243,10 +244,26 @@ tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel (_,_,[]) us = False
 tieneUnSeguidorFiel red us = hayseguidorfiel red us (likesDePublicacion (head(publicacionesDe red us)))
     
-
-
-
 --Ejercicio 10
+
+estanRelacionados :: RedSocial -> Usuario -> Usuario -> Bool
+estanRelacionados red x y | pertenece (x,y) (relaciones red) = True
+                          | pertenece (y,x) (relaciones red) = True
+                          | otherwise = False
+                                                                   
 -- describir qué hace la función: .....
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
-existeSecuenciaDeAmigos = undefined
+existeSecuenciaDeAmigos red us1 us2 | estanRelacionados red us1 us2 = True
+                                    | otherwise = revisarAmigos red (amigosDe red us1) us2 [us1]
+
+revisarAmigos :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
+revisarAmigos red [] us2 yaProbados = False
+revisarAmigos red (u:us) us2 yaProbados | estanRelacionados red u us2 = True
+                                        | pertenece u yaProbados = revisarAmigos red us us2 yaProbados
+                                        | otherwise = revisarAmigos red amigosEnCadena us2 (u : yaProbados)
+                                        where amigosEnCadena = (amigosDeAmigos (amigosDe red u) yaProbados us)
+
+amigosDeAmigos :: [Usuario] -> [Usuario] -> [Usuario] -> [Usuario]
+amigosDeAmigos [] _ _ = []
+amigosDeAmigos (f:fs) yaProbados us | pertenece f yaProbados = amigosDeAmigos fs yaProbados us 
+                                    | otherwise = f : amigosDeAmigos fs yaProbados us
