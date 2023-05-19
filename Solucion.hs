@@ -250,7 +250,8 @@ esSeguidorFiel red u1 u2
         cantDePublicacionesDeU1 = len(publicacionesDe red u1)
     
  -- FUNCION AUXILIAR 
- -- Indica si hay un seguidor fiel de un usuario dentro de una lista
+ -- Indica si hay un seguidor fiel de un usuario dentro de una red en base a
+ -- la funcion esSeguidorFiel
 haySeguidorFiel :: RedSocial -> Usuario -> [Usuario] -> Bool   
 haySeguidorFiel _ _ [] = False
 haySeguidorFiel red u1 [u2]
@@ -271,26 +272,37 @@ tieneUnSeguidorFiel (_,_,[]) us = False
 tieneUnSeguidorFiel red us = 
     haySeguidorFiel red us (likesDePublicacion (head(publicacionesDe red us)))
     
---Ejercicio 10
+-- Ejercicio 10
 
+-- FUNCION AUXILIAR
+-- Dados dos usuarios, analiza si tienen relacion en la red a traves de amigosDe
+-- y pertenece
 estanRelacionados :: RedSocial -> Usuario -> Usuario -> Bool
-estanRelacionados red x y | pertenece (x,y) (relaciones red) = True
-                          | pertenece (y,x) (relaciones red) = True
-                          | otherwise = False
-                                                                   
--- describir qué hace la función: .....
-existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
-existeSecuenciaDeAmigos red us1 us2 | estanRelacionados red us1 us2 = True
-                                    | otherwise = revisarAmigos red (amigosDe red us1) us2 [us1]
+estanRelacionados red u1 u2 
+    | pertenece u1 (amigosDe red u2) = True
+    | otherwise = False
 
-revisarAmigos :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
-revisarAmigos red [] us2 yaProbados = False
-revisarAmigos red (u:us) us2 yaProbados | estanRelacionados red u us2 = True
-                                        | pertenece u yaProbados = revisarAmigos red us us2 yaProbados
-                                        | otherwise = revisarAmigos red amigosEnCadena us2 (u : yaProbados)
-                                        where amigosEnCadena = (amigosDeAmigos (amigosDe red u) yaProbados us)
-
+-- FUNCION AUXILIAR
+-- 
 amigosDeAmigos :: [Usuario] -> [Usuario] -> [Usuario] -> [Usuario]
 amigosDeAmigos [] _ _ = []
-amigosDeAmigos (f:fs) yaProbados us | pertenece f yaProbados = amigosDeAmigos fs yaProbados us 
-                                    | otherwise = f : amigosDeAmigos fs yaProbados us
+amigosDeAmigos (f:fs) yaProbados us 
+    | pertenece f yaProbados = amigosDeAmigos fs yaProbados us 
+    | otherwise = f : amigosDeAmigos fs yaProbados us    
+
+-- FUNCION AUXILIAR
+-- La funcion itera hasta agotar los usuarios de la red 
+revisarAmigos :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
+revisarAmigos _ [] _ _ = False
+revisarAmigos red (u:us) us2 yaProbados 
+    | estanRelacionados red u us2 = True
+    | pertenece u yaProbados = revisarAmigos red us us2 yaProbados
+    | otherwise = revisarAmigos red amigosEnCadena us2 (u : yaProbados)
+    where 
+        amigosEnCadena = (amigosDeAmigos (amigosDe red u) yaProbados us)                                       
+
+-- 
+existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
+existeSecuenciaDeAmigos red us1 us2 
+    | estanRelacionados red us1 us2 = True
+    | otherwise = revisarAmigos red (amigosDe red us1) us2 [us1]
