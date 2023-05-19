@@ -1,5 +1,15 @@
 -- funciones posiblemente utiles o cosas q pense q servian y descarte
 
+pertenece :: (Eq t) => t -> [t] -> Bool
+pertenece _ [] = False
+pertenece e (l:ls) 
+    | e == l = True
+    | otherwise = pertenece e ls
+
+len :: [t] -> Int
+len [] = 0
+len (t:ts) = 1 + len ts
+
 -- funcion auxiliar 
 cantidadDeApariciones :: (Eq t) => t -> [t] -> Integer
 cantidadDeApariciones x l

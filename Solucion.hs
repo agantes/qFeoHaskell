@@ -5,7 +5,7 @@ module Solucion where
 -- Completar con los datos del grupo
 --
 -- Nombre de Grupo: xx
--- Integrante 1: Nombre Apellido, email, LU
+-- Integrante 1: Augusto Gantes, gantesaugusto3@gmail.com, 214/22
 -- Integrante 2: Nombre Apellido, email, LU
 -- Integrante 3: Nombre Apellido, email, LU
 -- Integrante 4: Nombre Apellido, email, LU
@@ -46,7 +46,14 @@ likesDePublicacion (_, _, us) = us
 -- Ejercicio 1
 
 -- FUNCION AUXILIAR
--- Verifica que un elemento pertenece a una secuencia
+-- Cuenta los elementos de una lista iterando a traves de la misma
+len :: [t] -> Int
+len [] = 0
+len (t:ts) = 1 + len ts
+
+-- FUNCION AUXILIAR
+-- Verifica que un elemento pertenece a una secuencia analizando la cabeza de 
+-- la secuencia y luego iterando sobre cola de la misma
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (l:ls) 
@@ -62,7 +69,7 @@ proyectarTodosNombres (x:xs) = [nombreDeUsuario(x)] ++ proyectarTodosNombres xs
 
 -- FUNCION AUXILIAR 
 -- Quita los repetidos de una lista de manera que queda una sola instancia
--- (la última)
+-- (la última) 
 quitarRepetidos :: (Eq t) => [t] -> [t]
 quitarRepetidos [] = []
 quitarRepetidos (x:xs) 
@@ -70,7 +77,8 @@ quitarRepetidos (x:xs)
     | otherwise = x : quitarRepetidos xs 
 
 -- Devuelve como resultado todos los nombres de los usuarios de la red
--- en forma de lista de strings
+-- en forma de lista de strings sacando los repetidos de la lista resultante
+-- de proyectar los nombres de los ususarios
 nombresDeUsuarios :: RedSocial -> [String]
 nombresDeUsuarios redSocial =
     quitarRepetidos (proyectarTodosNombres (usuarios(redSocial)))
@@ -79,7 +87,8 @@ nombresDeUsuarios redSocial =
                                                                                 
 -- FUNCION AUXILIAR
 -- A partir de una lista de relaciones da una lista de usuarios que tienen 
--- una relacion con el usuario que se pasa como parametro
+-- una relacion con el usuario que se pasa como parametro analizando si el
+-- usuario pertenece a la relacion utilizando la informacion de los ids
 amigosDesdeRelDe :: [Relacion] -> Usuario -> [Usuario]
 amigosDesdeRelDe [] _ = []
 amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name) 
@@ -88,15 +97,17 @@ amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name)
     | otherwise = amigosDesdeRelDe rels (id, name)
 
 -- Devuelve todos los amigos de un usuario como lista de usuarios
--- a partir de una red social y un usuario
+-- a partir de una red social y un usuario utilizando amigosDesdeRelDe junto a 
+-- un usuario en particular
 amigosDe :: RedSocial -> Usuario -> [Usuario]
 amigosDe redSocial us = amigosDesdeRelDe (relaciones(redSocial)) us
 
 -- Ejercicio 3
 
--- Devuelve el numero de amigos que tiene un usuario en la red social
+-- Devuelve el numero de amigos que tiene un usuario en la red social a partir 
+-- de calcular la longitud de la lista que contiene a sus amigos
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
-cantidadDeAmigos redSocial us = length (amigosDe redSocial us)
+cantidadDeAmigos redSocial us = len (amigosDe redSocial us)
 
 -- Ejercicio 4
 
@@ -208,41 +219,57 @@ lesGustanLasMismasPublicaciones red us1 us2
         pubQueLeGustanUs1 = publicacionesQueLeGustanA red us1
         pubQueLeGustanUs2 = publicacionesQueLeGustanA red us2
 
---Ejercicio 9
---auxiliar: cuenta el numero de likes que un usuario dió dentro de una lista de publicaciones
-cuentalikes :: RedSocial -> Usuario -> [Publicacion] -> Int
-cuentalikes red us t
-    | length t == 1 && (leDioLike (head t) us) == True = 1
-    | length t == 1 && (leDioLike (head t) us) == False = 0
-    | leDioLike (head t) us == True = 1 + cuentalikes red us (tail t)
-    | leDioLike (head t) us == False = 0 + cuentalikes red us (tail t)
-    
---auxiliar: cuenta el numero de likes que un usuario2 le dio a la lista de publicaciones de otro usuario1
+-- Ejercicio 9
+
+-- FUNCION AUXILIAR
+-- Cuenta el numero de likes que un usuario dió dentro de una lista de 
+-- publicaciones
+cuentaLikes :: RedSocial -> Usuario -> [Publicacion] -> Int
+cuentaLikes _ u [p] 
+    | leDioLike p u = 1
+    | otherwise = 0
+cuentaLikes red u (p:ps)
+    | leDioLike p u = 1 + cuentaLikes red u ps
+    | otherwise = cuentaLikes red u ps
+
+-- FUNCION AUXILIAR
+-- Cuenta el numero de likes que un usuario2 le dio a la lista de publicaciones 
+-- de otro usuario1
 likesPersonales :: RedSocial -> Usuario -> Usuario -> Int
-likesPersonales red us1 us2 = cuentalikes red us2 (publicacionesDe red us1)
+likesPersonales red us1 us2 = cuentaLikes red us2 (publicacionesDe red us1)
 
---auxiliar:  si el numero de likes personales de un us2 es igual al numero de publicaciones de un us1 devuelve True 
---revisa si us2 es seguidor fiel de us1
-esseguidorfiel :: RedSocial -> Usuario -> Usuario -> Bool
-esseguidorfiel red us1 us2
-    |likesPersonales red us1 us2 == length(publicacionesDe red us1) = True
-    |likesPersonales red us1 us2 < length(publicacionesDe red us1) = False
+-- FUNCION AUXILIAR
+-- Si el numero de likes personales de un u2 es igual a la cantidad de 
+-- publicaciones de un u1 devuelve True revisa si u2 es seguidor fiel de u1
+esSeguidorFiel :: RedSocial -> Usuario -> Usuario -> Bool
+esSeguidorFiel red u1 u2
+    | likesDeU2AU1 == cantDePublicacionesDeU1 = True
+    | likesDeU2AU1 < cantDePublicacionesDeU1 = False
+    where
+        likesDeU2AU1 = likesPersonales red u1 u2
+        cantDePublicacionesDeU1 = len(publicacionesDe red u1)
     
- --aux: si hay un seguidor fiel de un usuario dentro de una lista
-hayseguidorfiel :: RedSocial -> Usuario -> [Usuario] -> Bool 
-hayseguidorfiel red us t
-    |length t == 0 = False
-    |length t == 1 && esseguidorfiel red us (head t) == True = True
-    |length t == 1 && esseguidorfiel red us (head t) == False = False
-    |esseguidorfiel red us (head t) == False = hayseguidorfiel red us (tail t)
-    |esseguidorfiel red us (head t) == True = True
-    
- 
+ -- FUNCION AUXILIAR 
+ -- Indica si hay un seguidor fiel de un usuario dentro de una lista
+haySeguidorFiel :: RedSocial -> Usuario -> [Usuario] -> Bool   
+haySeguidorFiel _ _ [] = False
+haySeguidorFiel red u1 [u2]
+    | esU2SeguidorFiel = True
+    | otherwise = False
+    where 
+        esU2SeguidorFiel = esSeguidorFiel red u1 u2
+haySeguidorFiel red u1 (u2:us2)
+    | not esU2SeguidorFiel = haySeguidorFiel red u1 us2
+    | otherwise = True
+    where 
+        esU2SeguidorFiel = esSeguidorFiel red u1 u2
 
--- True si hay uno o mas usuarios que hayan dado like a todas las publicaciones del usuario
+-- Devuelve True si hay uno o mas usuarios que hayan dado like a todas las 
+-- publicaciones del usuario
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel (_,_,[]) us = False
-tieneUnSeguidorFiel red us = hayseguidorfiel red us (likesDePublicacion (head(publicacionesDe red us)))
+tieneUnSeguidorFiel red us = 
+    haySeguidorFiel red us (likesDePublicacion (head(publicacionesDe red us)))
     
 --Ejercicio 10
 

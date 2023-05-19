@@ -117,7 +117,8 @@ nUsuarios :: Integer -> [Usuario]
 nUsuarios 0 = []
 nUsuarios n = [(n,"A")] ++ nUsuarios (n-1)
 
--- Genera relaciones entre toda la red y un usuario dado
+-- Genera relaciones entre toda la red y un usuario dado concatenando relaciones
+-- variando los usuarios de red a traves de recursividad
 relacionesCon :: [Usuario] -> Usuario -> [Relacion]
 relacionesCon [u] _ = []
 relacionesCon (u:us) v = [(v,u)] ++ relacionesCon us v
