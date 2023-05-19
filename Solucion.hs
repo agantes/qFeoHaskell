@@ -46,14 +46,11 @@ likesDePublicacion (_, _, us) = us
 -- Ejercicio 1
 
 -- FUNCION AUXILIAR
--- Cuenta los elementos de una lista iterando a traves de la misma
 len :: [t] -> Int
 len [] = 0
 len (t:ts) = 1 + len ts
 
 -- FUNCION AUXILIAR
--- Verifica que un elemento pertenece a una secuencia analizando la cabeza de 
--- la secuencia y luego iterando sobre cola de la misma
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (l:ls) 
@@ -61,15 +58,11 @@ pertenece e (l:ls)
     | otherwise = pertenece e ls
 
 -- FUNCION AUXILIAR
--- De una lista de usuarios genera una lista de strings
--- con repetidos incluidos
 proyectarTodosNombres :: [Usuario] -> [String]
 proyectarTodosNombres [] = []
 proyectarTodosNombres (x:xs) = [nombreDeUsuario(x)] ++ proyectarTodosNombres xs
 
 -- FUNCION AUXILIAR 
--- Quita los repetidos de una lista de manera que queda una sola instancia
--- (la última) 
 quitarRepetidos :: (Eq t) => [t] -> [t]
 quitarRepetidos [] = []
 quitarRepetidos (x:xs) 
@@ -86,9 +79,6 @@ nombresDeUsuarios redSocial =
 -- Ejercicio 2
                                                                                 
 -- FUNCION AUXILIAR
--- A partir de una lista de relaciones da una lista de usuarios que tienen 
--- una relacion con el usuario que se pasa como parametro analizando si el
--- usuario pertenece a la relacion utilizando la informacion de los ids
 amigosDesdeRelDe :: [Relacion] -> Usuario -> [Usuario]
 amigosDesdeRelDe [] _ = []
 amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name) 
@@ -96,9 +86,10 @@ amigosDesdeRelDe (((id1, name1), (id2, name2)):rels) (id, name)
     | id2 == id = (id1, name1) : amigosDesdeRelDe rels (id, name)
     | otherwise = amigosDesdeRelDe rels (id, name)
 
--- Devuelve todos los amigos de un usuario como lista de usuarios
--- a partir de una red social y un usuario utilizando amigosDesdeRelDe junto a 
--- un usuario en particular
+--Devuelve todos los amigos de un usuario como lista de usuarios
+--a partir de una red social y un usuario utilizando amigosDesdeRelDe junto a 
+--un usuario en particular, analizando si el usuario pertenece a la relacion
+--utilizando la informacion de los ids
 amigosDe :: RedSocial -> Usuario -> [Usuario]
 amigosDe redSocial us = amigosDesdeRelDe (relaciones(redSocial)) us
 
@@ -112,12 +103,6 @@ cantidadDeAmigos redSocial us = len (amigosDe redSocial us)
 -- Ejercicio 4
 
 -- FUNCION AUXILIAR
--- compararUsuarios recibe la red social (solo para tener la cantidad de amigos 
--- de cada usuario), la lista de todos los usuarios y el primero de esta lista, 
--- a partir de ahi compara la cantidad de amigos de todos los usuarios de la 
--- lista uno a uno empezando con el primero, si un usuario tiene mas amigos que 
--- el primero se vuelve a llamar a la funcion con este usuario nuevo y con la 
--- cola de la lista
 compararUsuarios :: RedSocial -> [Usuario] -> Usuario -> Usuario
 compararUsuarios _ [] x = x
 compararUsuarios red (u:us) x 
@@ -127,8 +112,9 @@ compararUsuarios red (u:us) x
         amigosX = cantidadDeAmigos red x
         amigosU = cantidadDeAmigos red u
 
--- Llama a la funcion compararUsuarios pasandole como parametros la red social 
--- la lista de todos los usuarios de la res y el primer usuario de esta lista, 
+--Llama a la funcion compararUsuarios pasandole como parametros la red social 
+--la lista de todos los usuarios de la red y el primer usuario de esta lista,
+--y ahi se comparan los usuarios uno a uno 
 -- REQUIERE QUE |usuarios| > 0
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = 
@@ -137,8 +123,6 @@ usuarioConMasAmigos red =
 -- Ejercicio 5
 
 -- FUNCION AUXILIAR
--- A partir de un numero n, verifica si en la red el usuario con mas amigos
--- cuenta con n+1 amigos 
 usuarioConNYUnAmigos :: RedSocial -> Int -> Bool
 usuarioConNYUnAmigos red n
     | cantidadDeAmigos red (usuarioConMasAmigos(red)) > n = True
@@ -153,20 +137,12 @@ estaRobertoCarlos red = usuarioConNYUnAmigos red 1000000
 --Ejercicio 6
 
 -- FUNCION AUXILIAR
--- Devuelve True si el usuario de la publicacion es el mismo que del que 
--- queremos su lista de publicaciones si no lo es devuelve False
 esPublicacionDe :: Usuario -> Publicacion -> Bool
 esPublicacionDe u p 
     | usuarioDePublicacion p == u = True
     | otherwise = False
 
 -- FUNCION AUXILIAR
--- A esta funcion se le pasan las publicaciones de la red y el usuario del que 
--- queremos sus publicaciones y toma cada publicacion de la lista y la pasa a 
--- esPublicacionDe para chequear si la publicacion es del Usuario, si lo es la 
--- agrega a la lista y se chequea la siguiente invocando la cola de la lista,
--- sino se toma la cola de la lista para chequear el siguiente asi hasta que la 
--- lista este vacia
 filtrarPublicaciones :: [Publicacion] -> Usuario -> [Publicacion]
 filtrarPublicaciones [] _ = []
 filtrarPublicaciones (p:ps) u 
@@ -174,27 +150,21 @@ filtrarPublicaciones (p:ps) u
     | otherwise = filtrarPublicaciones ps u
 
 -- Llama a la funcion filtrarPublicaciones pasandole como parametros las 
--- publicaciones de la red y el usuario del que queremos  sus publicaciones
+-- publicaciones de la red y el usuario del que queremos sus publicaciones,
+--y si son sus publicaciones (se chequea con esPublicacionDe) se agrega a la
+--lista
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
 publicacionesDe red us = filtrarPublicaciones (publicaciones (red)) us
 
 -- Ejercicio 7
 
 -- FUNCION AUXILIAR
--- Si el usuario pertenece a la lista del tercer elemento de la tripla 
--- publicacion significa que le dio me gusta por eso solo se cheque si el 
--- usuario pertenece a esta lista
 leDioLike :: Publicacion -> Usuario -> Bool
 leDioLike (a, b, l) us 
     | pertenece us l = True
     | otherwise = False
 
 -- FUNCION AUXILIAR
--- Recibiendo el usuario como parametro y la lista de publicaciones, pasamos las
--- publicaciones de a una y vemos si nuestro usuario le dio me gusta (es decir 
--- si aparece en la lista de usuarios perteneciente a la publicacion), si le 
--- gusta la publicacion esta se agrega a la lista y se pasa con la siguiente 
--- hasta que quede vacia
 filtrarPorLikes :: [Publicacion] -> Usuario -> [Publicacion]
 filtrarPorLikes [] _ = []
 filtrarPorLikes (p:ps) u 
@@ -202,8 +172,8 @@ filtrarPorLikes (p:ps) u
     | otherwise = filtrarPorLikes ps u
 
 -- Igual que en el ejercicio anterior se pasan los parametros a una funcion 
--- filtrarPorLikes, que en este caso como dice el
--- nombre se seleccionan segun si le dio me gusta el usuario dado
+-- filtrarPorLikes, que en este caso se seleccionan segun si le dio me gusta 
+--el usuario dado y se agregan a la lista
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
 publicacionesQueLeGustanA red us = filtrarPorLikes (publicaciones (red)) us
 
@@ -222,8 +192,6 @@ lesGustanLasMismasPublicaciones red us1 us2
 -- Ejercicio 9
 
 -- FUNCION AUXILIAR
--- Cuenta el numero de likes que un usuario dió dentro de una lista de 
--- publicaciones
 cuentaLikes :: RedSocial -> Usuario -> [Publicacion] -> Int
 cuentaLikes _ u [p] 
     | leDioLike p u = 1
@@ -233,8 +201,6 @@ cuentaLikes red u (p:ps)
     | otherwise = cuentaLikes red u ps
 
 -- FUNCION AUXILIAR
--- Cuenta el numero de likes que un usuario2 le dio a la lista de publicaciones 
--- de otro usuario1
 likesPersonales :: RedSocial -> Usuario -> Usuario -> Int
 likesPersonales red us1 us2 = cuentaLikes red us2 (publicacionesDe red us1)
 
@@ -250,8 +216,6 @@ esSeguidorFiel red u1 u2
         cantDePublicacionesDeU1 = len(publicacionesDe red u1)
     
  -- FUNCION AUXILIAR 
- -- Indica si hay un seguidor fiel de un usuario dentro de una red en base a
- -- la funcion esSeguidorFiel
 haySeguidorFiel :: RedSocial -> Usuario -> [Usuario] -> Bool   
 haySeguidorFiel _ _ [] = False
 haySeguidorFiel red u1 [u2]
@@ -275,15 +239,12 @@ tieneUnSeguidorFiel red us =
 -- Ejercicio 10
 
 -- FUNCION AUXILIAR
--- Dados dos usuarios, analiza si tienen relacion en la red a traves de amigosDe
--- y pertenece
 estanRelacionados :: RedSocial -> Usuario -> Usuario -> Bool
 estanRelacionados red u1 u2 
     | pertenece u1 (amigosDe red u2) = True
     | otherwise = False
 
 -- FUNCION AUXILIAR
--- 
 amigosDeAmigos :: [Usuario] -> [Usuario] -> [Usuario] -> [Usuario]
 amigosDeAmigos [] _ _ = []
 amigosDeAmigos (f:fs) yaProbados us 
@@ -291,7 +252,6 @@ amigosDeAmigos (f:fs) yaProbados us
     | otherwise = f : amigosDeAmigos fs yaProbados us    
 
 -- FUNCION AUXILIAR
--- La funcion itera hasta agotar los usuarios de la red 
 revisarAmigos :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
 revisarAmigos _ [] _ _ = False
 revisarAmigos red (u:us) us2 yaProbados 
@@ -301,7 +261,10 @@ revisarAmigos red (u:us) us2 yaProbados
     where 
         amigosEnCadena = (amigosDeAmigos (amigosDe red u) yaProbados us)                                       
 
--- 
+--LLama a una funcion con una lista de posibles amigos de us2, empezando
+--por los amigos de us1, y luego agregando los amigos de amigos, una vez
+--que se prueban se agregan a yaProbados para no repetir, asi hasta recorrer
+--todos los posibles amigos de us2 conectados con us1
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
 existeSecuenciaDeAmigos red us1 us2 
     | estanRelacionados red us1 us2 = True

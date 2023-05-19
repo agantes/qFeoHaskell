@@ -86,6 +86,10 @@ red10 = ([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"A")], [], [])
 
 red11 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E")], [((1,"A"),(4,"D")),((1,"A"),(5,"E")),((4,"D"),(3,"C")),((2,"B"),(3,"C"))], []))
 
+red11bis = (([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"F"),(7,"G")], 
+            [((1,"A"),(4,"D")),((3,"C"),(5,"E")),((4,"D"),(3,"C")),((5,"E"),(6,"F")),
+             ((7,"G"),(6,"F")),((2,"B"),(7,"G"))], []))
+
 red12 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D"),(5,"E"),(6,"F")], [((1,"A"),(4,"D")),((1,"A"),(5,"E")),((4,"D"),(3,"C")),((2,"B"),(6,"F"))], []))
 
 red13 = (([(1,"A"),(2,"B"),(3,"C"),(4,"D")], [((1,"A"), (2,"B")), ((2,"B"), (3,"C")), ((3,"C"), (1,"A"))], []))
@@ -123,9 +127,8 @@ relacionesCon :: [Usuario] -> Usuario -> [Relacion]
 relacionesCon [u] _ = []
 relacionesCon (u:us) v = [(v,u)] ++ relacionesCon us v
 
--------------------------------------------------------------------------------------------------------   
--- Tests Catedra
-
+-------------------------------------------------------------------------------------------------------
+--Tests Catedra
 testsCatedra = TestList [
     " nombresDeUsuarios 1" ~: (nombresDeUsuarios redA) ~?= ["Juan","Natalia","Pedro","Mariela"],
 
@@ -150,7 +153,8 @@ testsCatedra = TestList [
 
 expectAny actual expected = elem actual expected ~? ("expected any of: " ++ show expected ++ "\n but got: " ++ show actual)
 
-------------------------------------------------------------------------------------------------------- 
+-------------------------------------------------------------------------------------------------------
+
 -- Tests ejercicio 1 --
 testNombresDeUsuarios = TestList [
     " Lista de nombres vacia " ~: (nombresDeUsuarios red2) ~?= [],
@@ -220,7 +224,8 @@ testTieneUnSeguidorFiel = TestList [
 testExisteSecuenciaDeAmigos = TestList [
     " Amigos directos " ~: (existeSecuenciaDeAmigos red4 (2,"B") (3,"C")) ~?= True,
     " Existe secuencia " ~: (existeSecuenciaDeAmigos red11 (2,"B") (1,"A")) ~?= True,
-    " Existe secuencia II " ~: (existeSecuenciaDeAmigos red13 (3,"C") (4,"D")) ~?= False,
+    " Existe secuencia II " ~: (existeSecuenciaDeAmigos red11bis (2,"B") (1,"A")) ~?= True,
+    " No existe secuencia (bucle) " ~: (existeSecuenciaDeAmigos red13 (3,"C") (4,"D")) ~?= False,
     " No existe secuencia " ~: (existeSecuenciaDeAmigos red12 (2,"B") (1,"A")) ~?= False
     ]    
 
